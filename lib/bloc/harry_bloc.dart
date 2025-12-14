@@ -6,26 +6,23 @@ part 'harry_state.dart';
 part 'harry_event.dart';
 
 class HarryBloc extends Bloc<HarryEvent, HarryState> {
-  HarryBloc() : super(HarryInitial()) {
+  final Repository repository;
+
+  HarryBloc(this.repository) : super(HarryInitial()) {
     on<FetchCharacters>(_onFetchCharacters);
-    on<SetLoadingEvent>(_onSetLoading);
   }
 
-  final repository = Repository();
-
   Future<void> _onFetchCharacters(
-      FetchCharacters event, Emitter<HarryState> emit) async {
+      FetchCharacters event,
+      Emitter<HarryState> emit,
+      ) async {
     emit(Loading());
 
     try {
-      final characters = await repository.getCharacters();
-      emit(Success(characters));
+      final list = await repository.getCharacters();
+      emit(Success(list));
     } catch (e) {
       emit(Error(e.toString()));
     }
-  }
-
-  void _onSetLoading(SetLoadingEvent event, Emitter<HarryState> emit) {
-    emit(Loading());
   }
 }

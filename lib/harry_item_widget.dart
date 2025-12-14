@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -22,7 +23,7 @@ class HarryItemWidget extends StatelessWidget {
                 fontSize: 40,
               ),
             ),
-            Image.network(item.image)
+            CachedNetworkImage(imageUrl: item.image)
           ],
         ),
       );

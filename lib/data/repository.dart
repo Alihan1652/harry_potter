@@ -1,13 +1,32 @@
 import 'package:dio/dio.dart';
-import 'package:harry_potter/model/harry_model.dart';
+import 'package:harry_potter/data/hive_helper.dart';
+
+import '../model/harry_model.dart';
 
 class Repository {
-  final dio = Dio();
+  final Dio dio = Dio();
+  final HiveHelper hiveHelper = HiveHelper();
+
   Future<List<HarryModel>> getCharacters() async {
-    final response = await dio.get('https://potterapi-fedeperin.vercel.app/en/characters',);
-    final data = response.data;
-    return (data as List)
-        .map((item) => HarryModel.fromJson(item))
-        .toList();
+    try {
+      final response = await dio.get(
+        'https://potterapi-fedeperin.vercel.app/en/characters',
+      );
+
+      final data = response.data as List;
+      final list =
+      data.map((e) => HarryModel.fromJson(e)).toList();
+
+      await hiveHelper.saveList(list);
+      return list;
+    } catch (_) {
+      final cached = await hiveHelper.getList();
+
+      if (cached.isNotEmpty) {
+        return cached;
+      }
+
+      throw Exception('Нет интернета и локальных данных');
+    }
   }
 }

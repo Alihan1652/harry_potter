@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:harry_potter/harry_item_widget.dart';
 import 'bloc/harry_bloc.dart';
+import 'data/hive_helper.dart';
+import 'data/repository.dart';
 
 class HarryScreen extends StatefulWidget {
   const HarryScreen({super.key});
@@ -11,7 +13,7 @@ class HarryScreen extends StatefulWidget {
 }
 
 class _HarryScreenState extends State<HarryScreen> {
-  final bloc = HarryBloc()..add(FetchCharacters());
+  final bloc = HarryBloc(Repository())..add(FetchCharacters());
 
   @override
   Widget build(BuildContext context) {
@@ -24,23 +26,27 @@ class _HarryScreenState extends State<HarryScreen> {
             builder: (context, state) {
               if (state is Success) {
                 final list = state.listModels;
+
                 return ListView.builder(
                   itemCount: list.length,
                   itemBuilder: (context, index) {
-                    final item = list[index];
-                    return HarryItemWidget(item: item);
+                    return HarryItemWidget(item: list[index]);
                   },
                 );
-              } else if (state is Error) {
+              }
+
+              if (state is Error) {
                 return Center(
                   child: Text(
                     state.message,
-                    style: TextStyle(fontSize: 50),
+                    style: const TextStyle(fontSize: 24),
                   ),
                 );
               }
 
-              return Center(child: CircularProgressIndicator());
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
             },
           ),
         ),
